@@ -26,7 +26,13 @@ SECRET_KEY = 'django-insecure-xismu#z%g8139a$9l%x$2-29l9_x*chw_^(6pie!!q&-%i24u=
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['student-system-management.onrender.com', 'localhost', '127.0.0.1']
+import os
+
+ALLOWED_HOSTS = [
+    'student-management-system-website.onrender.com',
+    'localhost',
+    '127.0.0.1'
+]
 
 CSRF_TRUSTED_ORIGINS = [
     'https://student-management-system-website.onrender.com',
