@@ -26,11 +26,11 @@ SECRET_KEY = 'django-insecure-xismu#z%g8139a$9l%x$2-29l9_x*chw_^(6pie!!q&-%i24u=
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['onrender.com']
+ALLOWED_HOSTS = ['student-system-management.onrender.com', 'localhost', '127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = [
+    'https://student-management-system-website.onrender.com',
     'https://*.ngrok-free.app',
-
 ]
 
 
@@ -150,7 +150,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static',]
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # --------------------------------------------------
 # MEDIA FILES (UPLOADS)
