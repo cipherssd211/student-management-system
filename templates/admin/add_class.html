@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3>Add Class</h3>
+
+<form method="post">
+    {% csrf_token %}
+    <input class="form-control mb-2" name="name" placeholder="e.g. Senior 1" required>
+    <button class="btn btn-success">Save</button>
+</form>
+
+{% endblock %}

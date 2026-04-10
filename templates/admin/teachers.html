@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3>Manage Teachers</h3>
+<a href="{% url 'admin_add_teacher' %}" class="btn btn-success mb-3">
+    + Add Teacher
+</a>
+
+<table class="table table-bordered">
+<tr>
+    <th>Username</th>
+    <th>Subject</th>
+    <th>Actions</th>
+</tr>
+
+{% for t in teachers %}
+<tr>
+    <td>{{ t.user.username }}</td>
+    <td>{{ t.subject }}</td>
+    <td>
+        <a href="{% url 'admin_edit_teacher' t.id %}" class="btn btn-warning btn-sm">Edit</a>
+    <a href="{% url 'admin_assign_subjects' t.id %}" class="btn btn-info btn-sm">
+        Assign Subjects
+    </a>
+    <a href="{% url 'admin_delete_teacher' t.id %}" class="btn btn-danger btn-sm"
+       onclick="return confirm('Delete teacher?')">Delete</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

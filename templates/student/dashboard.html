@@ -1,0 +1,654 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block sidebar %}
+{% include "includes/student_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+:root{
+--primary:#0d6efd;
+--soft-bg:#f4f6f9;
+}
+
+body{
+background:var(--soft-bg);
+}
+
+/* PROFILE */
+
+.profile-img{
+width:130px;
+height:130px;
+border-radius:50%;
+object-fit:cover;
+border:4px solid #247cff;
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+object-position:center top;
+}
+
+/* CARDS */
+
+.dashboard-card{
+border:none;
+border-radius:14px;
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+transition:.3s;
+}
+
+.dashboard-card:hover{
+transform:translateY(-3px);
+}
+
+/* STAT CARDS */
+
+.stat-card{
+border-radius:14px;
+padding:20px;
+color:#fff;
+box-shadow:0 8px 20px rgba(0,0,0,0.12);
+transition:.3s;
+}
+
+.stat-card:hover{
+transform:translateY(-4px);
+}
+
+.stat-card h3{
+font-weight:700;
+margin-bottom:0;
+}
+
+.bg-attendance{background:linear-gradient(135deg,#198754,#28a745);}
+.bg-subjects{background:linear-gradient(135deg,#0d6efd,#3b82f6);}
+.bg-notices{background:linear-gradient(135deg,#fd7e14,#f59e0b);}
+.bg-fees{background:linear-gradient(135deg,#6f42c1,#8b5cf6);}
+
+/* TABLE */
+
+.info-table td{
+padding:10px;
+border:1px solid #dee2e6;
+}
+
+/* TIMETABLE */
+
+.timetable-table th{
+background:#f8f9fa;
+font-weight:600;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.profile-img{
+width:95px;
+height:95px;
+}
+
+.stat-card{
+text-align:center;
+padding:15px;
+}
+
+}
+
+/* DASHBOARD HEADER */
+
+.dashboard-header{
+background:linear-gradient(135deg,#1e3c72,#2a5298);
+color:#f8f9fa;
+padding:20px;
+border-radius:14px;
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+
+/* CLOCK */
+
+.header-clock{
+text-align:right;
+}
+
+.clock-time{
+font-size:26px;
+font-weight:700;
+color:#f8f9fa;
+}
+
+.clock-date{
+font-size:13px;
+color:#f8f9fa
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.dashboard-header{
+flex-direction:column;
+align-items:flex-start;
+}
+
+.header-clock{
+text-align:left;
+margin-top:10px;
+}
+
+.clock-time{
+font-size:22px;
+}
+
+}
+
+.sidebar a i{
+width:26px;
+text-align:center;
+font-size:20px;
+}
+
+.list-group-item {
+    flex-wrap: wrap;
+}
+
+.list-group-item .btn {
+    white-space: nowrap;
+}
+
+@media(max-width:768px){
+    .list-group-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap:10px;
+    }
+}
+
+</style>
+
+
+<div class="container-fluid">
+<div class="row">
+
+
+<!-- DASHBOARD HEADER -->
+
+<div class="dashboard-header d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+<div>
+
+<h3 class="fw-bold mb-1">Student Dashboard</h3>
+
+<p class="mb-0 opacity-75">
+Welcome, {{ student.application.full_name }}
+</p>
+
+</div>
+
+<!-- TIMER -->
+
+<div class="header-clock text-end">
+
+<div class="clock-time" id="studentClock">--:--:--</div>
+
+<div class="clock-date" id="studentDate">Loading...</div>
+
+</div>
+
+</div>
+
+
+
+<!-- PROFILE -->
+
+<div class="card dashboard-card mb-4">
+<div class="card-body text-center">
+
+{% if student.application.passport_photo %}
+<img src="{{ student.application.passport_photo.url }}" class="profile-img mb-3">
+{% endif %}
+
+<h4 class="fw-bold">{{ student.application.full_name }}</h4>
+
+<p class="text-muted">{{ student.school_email }}</p>
+
+<span class="badge bg-primary px-3 py-2">
+Student ID: {{ student.student_id }}
+</span>
+
+<p class="text-muted mt-2">
+Class: {{ student.classroom }} |
+Admission Year: 20{{ student.admission_year }}
+</p>
+
+</div>
+</div>
+
+
+<!-- QUICK ACTIONS -->
+
+<div class="row text-center mb-4">
+
+<div class="col-4">
+<a href="{% url 'student_attendance_history' %}" class="btn btn-light w-100 shadow-sm">
+<i class="fa-solid fa-clipboard-user"></i><br>Attendance
+</a>
+</div>
+
+<div class="col-4">
+<a href="{% url 'student_marks_report' %}" class="btn btn-light w-100 shadow-sm">
+<i class="fa-solid fa-marker"></i><br>Marks
+</a>
+</div>
+
+<div class="col-4">
+<button id="checkout-button" class="btn btn-success w-100 shadow-sm">
+<i class="fa-solid fa-money-bills"></i><br>Fees
+</button>
+</div>
+
+</div>
+
+<audio id="noticeSound">
+    <source src="{% static 'sounds/notification.mp3' %}" type="audio/mpeg">
+</audio>
+
+<!-- STATS -->
+
+<div class="row mb-4">
+
+<div class="col-md-3 col-6 mb-3">
+<div class="stat-card bg-attendance">
+<small>Attendance</small>
+<h3>{{ attendance_percentage|floatformat:1 }}%</h3>
+</div>
+</div>
+
+<div class="col-md-3 col-6 mb-3">
+<div class="stat-card bg-subjects">
+<small>Subjects</small>
+<h3>{{ subjects|length }}</h3>
+</div>
+</div>
+
+<div class="col-md-3 col-6 mb-3">
+<div class="stat-card bg-notices">
+<small>Notices</small>
+<h3>{{ notices|length }}</h3>
+</div>
+</div>
+
+<div class="col-md-3 col-6 mb-3">
+<div class="stat-card bg-fees">
+<small>School Fees</small>
+<h3>Pay</h3>
+</div>
+</div>
+
+</div>
+
+
+<!-- STUDENT INFORMATION -->
+
+<div class="card dashboard-card mb-4">
+
+<div class="card-header fw-bold">
+<i class="fa-solid fa-graduation-cap"></i> Student Information
+</div>
+
+<div class="card-body table-responsive">
+
+<table class="table info-table">
+
+<tr>
+<td>Gender</td>
+<td>{{ student.application.gender }}</td>
+</tr>
+
+<tr>
+<td>Date of Birth</td>
+<td>{{ student.application.date_of_birth }}</td>
+</tr>
+
+<tr>
+<td>Phone Number</td>
+<td>{{ student.application.phone_number }}</td>
+</tr>
+
+<tr>
+<td>Academic Level</td>
+<td>{{ student.application.applied_level }}</td>
+</tr>
+
+<tr>
+<td>Stream</td>
+<td>{{ student.application.applied_stream|default:"N/A" }}</td>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+
+<!-- GUARDIAN INFORMATION -->
+
+<div class="card dashboard-card mb-4">
+
+<div class="card-header fw-bold">
+<i class="fa-solid fa-guarani-sign"></i> Guardian Information
+</div>
+
+<div class="card-body table-responsive">
+
+<table class="table info-table">
+
+<tr>
+<td>Guardian Name</td>
+<td>{{ student.application.guardian_name }}</td>
+</tr>
+
+<tr>
+<td>Relationship</td>
+<td>{{ student.application.guardian_relationship }}</td>
+</tr>
+
+<tr>
+<td>Guardian Phone</td>
+<td>{{ student.application.guardian_phone }}</td>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+
+<!-- SUBJECT ATTENDANCE -->
+
+<div class="card dashboard-card mb-4">
+
+<div class="card-header fw-bold">
+<i class="fa-solid fa-clipboard-user"></i> Subject Attendance
+</div>
+
+<div class="card-body table-responsive">
+
+<table class="table table-bordered">
+
+<thead>
+
+<tr>
+<th>Subject</th>
+<th>Total Lectures</th>
+<th>Attended</th>
+<th>Attendance %</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for a in subject_attendance %}
+
+<tr>
+
+<td>{{ a.subject.name }}</td>
+<td>{{ a.total }}</td>
+<td>{{ a.attended }}</td>
+
+<td>
+{% if a.percentage < 75 %}
+<span class="badge bg-danger">
+{{ a.percentage }}% ⚠
+</span>
+{% else %}
+<span class="badge bg-success">
+{{ a.percentage }}%
+</span>
+{% endif %}
+</td>
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="4" class="text-center text-muted">
+No attendance records yet
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+</div>s
+
+
+<!-- MARKS CHART -->
+
+<div class="card dashboard-card mb-4">
+
+<div class="card-header fw-bold">
+<i class="fa-regular fa-chart-bar"></i> Academic Performance
+</div>
+
+<div class="card-body">
+
+<canvas id="marksChart"></canvas>
+
+</div>
+
+</div>
+
+<!-- ATTENDANCE CHART -->
+
+<div class="card dashboard-card mb-4">
+
+<div class="card-header fw-bold">
+<i class="fa-solid fa-clipboard-user"></i> Attendance Overview
+</div>
+
+<div class="card-body">
+
+<canvas id="attendanceChart"></canvas>
+</div>
+</div>
+
+
+<!-- CHART -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+new Chart(document.getElementById('marksChart'),{
+
+type:'bar',
+
+data:{
+labels:{{ subject_names|safe }},
+datasets:[{
+label:'Marks',
+data:{{ subject_marks|safe }},
+backgroundColor:'#0d6efd'
+}]
+},
+
+options:{
+responsive:true
+}
+
+});
+
+new Chart(document.getElementById('attendanceChart'),{
+
+type:'bar',
+
+data:{
+labels:{{ attendance_labels|safe }},
+datasets:[{
+label:'Attendance %',
+data:{{ attendance_data|safe }},
+backgroundColor:'#198754'
+}]
+},
+
+options:{
+responsive:true,
+scales:{
+y:{
+beginAtZero:true,
+max:100
+}
+}
+}
+
+});
+
+</script>
+
+
+<!-- STRIPE -->
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+
+const stripe = Stripe("{{ stripe_public_key }}");
+
+document.getElementById("checkout-button").addEventListener("click",function(){
+
+fetch("{% url 'create_payment_session' %}")
+
+.then(response=>response.json())
+
+.then(session=>{
+
+stripe.redirectToCheckout({
+
+sessionId:session.id
+
+});
+
+});
+
+});
+
+</script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+function updateStudentClock(){
+
+const now = new Date();
+
+/* automatic country timezone */
+
+const time = now.toLocaleTimeString([],{
+hour:'2-digit',
+minute:'2-digit',
+second:'2-digit'
+});
+
+const date = now.toLocaleDateString([],{
+weekday:'long',
+year:'numeric',
+month:'long',
+day:'numeric'
+});
+
+const clock = document.getElementById("studentClock");
+const dateBox = document.getElementById("studentDate");
+
+if(clock && dateBox){
+clock.innerText = time;
+dateBox.innerText = date;
+}
+
+}
+
+updateStudentClock();
+setInterval(updateStudentClock,1000);
+
+});
+
+</script>
+
+<script>
+
+let lastNoticeId = localStorage.getItem("lastNoticeId") || null;
+
+function checkNotice(){
+
+fetch("/check-notice/")
+.then(res => res.json())
+.then(data => {
+
+if(!data.id) return;
+
+if(lastNoticeId === null){
+    lastNoticeId = data.id;
+    localStorage.setItem("lastNoticeId", data.id);
+    return;
+}
+
+if(data.id != lastNoticeId){
+
+    // 🔊 SOUND
+    const sound = document.getElementById("noticeSound");
+
+    if(sound){
+        sound.currentTime = 0;
+        sound.play().catch(() => {
+            console.log("Autoplay blocked");
+        });
+    }
+
+    // 🔴 BADGE UPDATE
+    let badge = document.getElementById("noticeBadge");
+    if(badge){
+        badge.innerText = parseInt(badge.innerText || "0") + 1;
+        badge.style.display = "inline-block";
+    }
+
+    // ALERT
+    alert("New Notice: " + data.title);
+
+    lastNoticeId = data.id;
+    localStorage.setItem("lastNoticeId", data.id);
+}
+
+});
+
+}
+
+// ⏱ RUN EVERY 10 SEC
+setInterval(checkNotice, 10000);
+
+</script>
+
+<!--// INITIAL CHECK / Modern browsers block sound until user interaction-->
+<script>
+document.addEventListener("click", function(){
+    const sound = document.getElementById("noticeSound");
+    if(sound){
+        sound.play().then(() => {
+            sound.pause();
+            sound.currentTime = 0;
+        }).catch(()=>{});
+    }
+}, {once:true});
+</script>
+
+{% endblock %}

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+<title>School Management System - Login</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+font-family:Arial, Helvetica, sans-serif;
+background:linear-gradient(135deg,#1e3c72,#2a5298);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+margin:0;
+}
+
+/* LOGIN CARD */
+
+.login-container{
+
+background:white;
+padding:40px;
+width:380px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+
+}
+
+/* SCHOOL HEADER */
+
+.school-header{
+
+text-align:center;
+margin-bottom:25px;
+
+}
+
+.school-logo{
+
+width:120px;
+height:120px;
+border-radius:50%;
+object-fit:cover;
+margin-bottom:10px;
+
+}
+
+.school-name{
+
+font-size:22px;
+font-weight:bold;
+color:#2c3e50;
+
+}
+
+/* TITLE */
+
+h2{
+text-align:center;
+margin-bottom:20px;
+}
+
+/* LABELS */
+
+label{
+font-weight:bold;
+font-size:14px;
+}
+
+/* INPUTS */
+
+input,select{
+
+width:100%;
+padding:11px;
+margin-top:5px;
+margin-bottom:18px;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:14px;
+
+}
+
+/* PASSWORD FIELD */
+
+.password-wrapper{
+position:relative;
+}
+
+.toggle-password{
+
+position:absolute;
+right:12px;
+top:50%;
+transform:translateY(-50%);
+cursor:pointer;
+font-size:13px;
+color:#2a5298;
+font-weight:bold;
+
+}
+
+/* LOGIN BUTTON */
+
+button{
+
+width:100%;
+padding:12px;
+background:#2a5298;
+color:white;
+border:none;
+border-radius:6px;
+font-size:15px;
+cursor:pointer;
+font-weight:bold;
+
+}
+
+button:hover{
+background:#1e3c72;
+}
+
+/* MESSAGE */
+
+.message{
+color:red;
+text-align:center;
+margin-bottom:10px;
+}
+
+/* LINKS */
+
+.extra-links{
+
+display:flex;
+justify-content:space-between;
+font-size:13px;
+margin-top:10px;
+
+}
+
+.extra-links a{
+
+text-decoration:none;
+color:#2a5298;
+
+}
+
+.extra-links a:hover{
+text-decoration:underline;
+}
+
+/* FOOTER */
+
+.footer{
+
+text-align:center;
+font-size:12px;
+margin-top:25px;
+color:#777;
+
+}
+
+@media(max-width:450px){
+
+.login-container{
+width:90%;
+padding:30px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="login-container">
+
+<div class="school-header">
+
+<img src="/static/images/school_logo.png" class="school-logo">
+
+<div class="school-name">Schoolname</div>
+
+</div>
+
+<h2>Login</h2>
+
+{% if messages %}
+{% for message in messages %}
+
+<div class="message">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<form method="post">
+
+{% csrf_token %}
+
+<label>Login As</label>
+
+<select name="role" required>
+
+<option value="">Select Role</option>
+<option value="student">Student</option>
+<option value="teacher">Staff</option>
+
+</select>
+
+<label>Username or Email</label>
+<input type="text" name="identifier" placeholder="Enter username or email" required>
+
+<label>Password</label>
+
+<div class="password-wrapper">
+
+<input type="password" name="password" id="password" placeholder="Enter your password" required>
+
+<span class="toggle-password" onclick="togglePassword()" id="toggleText">Show</span>
+
+</div>
+
+<button type="submit">Login</button>
+
+<div class="extra-links">
+
+<a href="{% url 'password_reset' %}">Forgot Password?</a>
+
+<a href="{% url 'help_page' %}">Help</a>
+
+</div>
+
+</form>
+
+<div class="footer">
+
+© <script>document.write(new Date().getFullYear())</script> Schoolname
+All Rights Reserved
+
+</div>
+
+</div>
+
+<script>
+
+function togglePassword(){
+
+var password=document.getElementById("password");
+var toggleText=document.getElementById("toggleText");
+
+if(password.type==="password"){
+password.type="text";
+toggleText.innerText="Hide";
+}else{
+password.type="password";
+toggleText.innerText="Show";
+}
+
+}
+
+</script>
+
+</body>
+</html>

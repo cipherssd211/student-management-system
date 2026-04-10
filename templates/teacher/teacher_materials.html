@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block sidebar %}
+{% include "includes/teacher_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold mb-4"><i class="fa-solid fa-align-justify"></i> My Materials</h3>
+
+<ul class="list-group">
+
+{% for m in materials %}
+<li class="list-group-item d-flex justify-content-between">
+{{ m.subject.name }}
+<a href="{{ m.file.url }}" target="_blank">View</a>
+</li>
+{% empty %}
+<li class="list-group-item">No materials uploaded</li>
+{% endfor %}
+
+</ul>
+
+{% endblock %}

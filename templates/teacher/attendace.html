@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block sidebar %}
+{% {% include "includes/teacher_sidebar.html" %}%}
+{% endblock %}
+{% block content %}
+
+<h3>Mark Attendance</h3>
+
+<p>
+    <strong>Student:</strong> {{ student.user.username }}<br>
+    <strong>Subject:</strong> {{ subject.name }}
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    <input type="radio" name="status" value="present" required> Present<br>
+    <input type="radio" name="status" value="absent"> Absent<br><br>
+
+    <button class="btn btn-primary">Submit</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3>Manage Classes</h3>
+<a href="{% url 'admin_add_class' %}" class="btn btn-success mb-3">+ Add Class</a>
+
+<table class="table table-bordered">
+<tr>
+    <th>Class Name</th>
+    <th>Actions</th>
+</tr>
+
+{% for c in classes %}
+<tr>
+    <td>{{ c.name }}</td>
+    <td>
+        <a href="{% url 'admin_edit_class' c.id %}" class="btn btn-warning btn-sm">Edit</a>
+        <a href="{% url 'admin_delete_class' c.id %}" class="btn btn-danger btn-sm"
+           onclick="return confirm('Delete class?')">Delete</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

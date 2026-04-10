@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+{% include "includes/student_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+:root{
+--primary:#2a5298;
+--secondary:#1e3c72;
+--bg:#f4f6f9;
+}
+
+body{
+background:var(--bg);
+}
+
+/* HEADER */
+.page-header{
+background:linear-gradient(135deg,var(--secondary),var(--primary));
+color:white;
+padding:20px;
+border-radius:14px;
+margin-bottom:25px;
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* CARD */
+.form-card{
+border:none;
+border-radius:16px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+background:white;
+padding:25px;
+}
+
+/* INPUT */
+.form-control, select{
+border-radius:10px;
+padding:10px;
+transition:0.3s;
+}
+
+.form-control:focus, select:focus{
+border-color:var(--primary);
+box-shadow:0 0 0 0.2rem rgba(42,82,152,0.15);
+}
+
+/* LABEL */
+label{
+font-weight:600;
+margin-bottom:5px;
+}
+
+/* SECTION TITLE */
+.section-title{
+font-size:14px;
+font-weight:bold;
+color:#2a5298;
+margin-bottom:10px;
+text-transform:uppercase;
+}
+
+/* BUTTON */
+.submit-btn{
+background:linear-gradient(135deg,var(--secondary),var(--primary));
+border:none;
+padding:10px 18px;
+border-radius:10px;
+font-weight:600;
+transition:0.3s;
+}
+
+.submit-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 8px 18px rgba(0,0,0,0.2);
+}
+
+/* MOBILE */
+@media(max-width:768px){
+.page-header{
+text-align:center;
+}
+}
+
+</style>
+
+<div class="container mt-4">
+
+<!-- HEADER -->
+<div class="page-header">
+<h4 class="fw-bold mb-1">
+<i class="fa-solid fa-pen-to-square me-2"></i> Edit Leave
+</h4>
+<p class="mb-0 opacity-75">Modify your leave request before admin decision</p>
+</div>
+
+<!-- FORM -->
+<div class="form-card">
+
+<form method="POST">
+{% csrf_token %}
+
+<!-- STUDENT INFO -->
+<div class="section-title">
+<i class="fa-solid fa-user me-1"></i> Student Information
+</div>
+
+<div class="mb-3">
+<label>Full Name</label>
+<input type="text" name="full_name" value="{{ leave.full_name }}" class="form-control" required>
+</div>
+
+<div class="mb-3">
+<label>Enrollment Number</label>
+<input type="text" name="enrollment_number" value="{{ leave.enrollment_number }}" class="form-control" required>
+</div>
+
+<!-- CLASS DETAILS -->
+<div class="section-title">
+<i class="fa-solid fa-school me-1"></i> Academic Details
+</div>
+
+<div class="row mb-3">
+
+<div class="col-md-4">
+<label>Class Level</label>
+<select name="class_level" class="form-control" required>
+<option {% if leave.class_level == "Senior 1" %}selected{% endif %}>Senior 1</option>
+<option {% if leave.class_level == "Senior 2" %}selected{% endif %}>Senior 2</option>
+<option {% if leave.class_level == "Senior 3" %}selected{% endif %}>Senior 3</option>
+<option {% if leave.class_level == "Senior 4" %}selected{% endif %}>Senior 4</option>
+</select>
+</div>
+
+<div class="col-md-4">
+<label>Section</label>
+<select name="section" class="form-control" required>
+<option {% if leave.section == "A" %}selected{% endif %}>A</option>
+<option {% if leave.section == "B" %}selected{% endif %}>B</option>
+<option {% if leave.section == "C" %}selected{% endif %}>C</option>
+</select>
+</div>
+
+<div class="col-md-4">
+<label>Stream</label>
+<select name="stream" class="form-control">
+<option value="">None</option>
+<option {% if leave.stream == "Science" %}selected{% endif %}>Science</option>
+<option {% if leave.stream == "Arts" %}selected{% endif %}>Arts</option>
+</select>
+</div>
+
+</div>
+
+<!-- REASON -->
+<div class="section-title">
+<i class="fa-solid fa-pen-to-square me-1"></i> Leave Reason
+</div>
+
+<div class="mb-3">
+<textarea name="reason" class="form-control" rows="4" required>{{ leave.reason }}</textarea>
+</div>
+
+<!-- DATES -->
+<div class="section-title">
+<i class="fa-solid fa-calendar-days me-1"></i> Leave Duration
+</div>
+
+<div class="row mb-4">
+
+<div class="col-md-6">
+<label>Start Date</label>
+<input type="date" name="start_date" value="{{ leave.start_date|date:'Y-m-d' }}" class="form-control" required>
+</div>
+
+<div class="col-md-6">
+<label>End Date</label>
+<input type="date" name="end_date" value="{{ leave.end_date|date:'Y-m-d' }}" class="form-control" required>
+</div>
+
+</div>
+
+<!-- BUTTON -->
+<div class="text-end">
+<button class="btn submit-btn text-white">
+<i class="fa-solid fa-pen me-1"></i> Update Leave
+</button>
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block sidebar %}
+{% include "includes/student_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="card shadow-sm">
+
+<div class="card-header fw-bold">
+{{ notice.title }}
+</div>
+
+<div class="card-body">
+
+<p>{{ notice.message }}</p>
+
+<small class="text-muted">
+Posted on {{ notice.created_at |date:"M d, Y" }} at {{ notice.created_at|time:"H:i" }}
+</small>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

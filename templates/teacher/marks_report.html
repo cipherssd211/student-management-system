@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block sidebar %}
+{% include "includes/teacher_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm">
+
+<!-- HEADER -->
+
+<div class="card-header bg-white d-flex justify-content-between align-items-center">
+
+<div>
+
+<h5 class="fw-bold mb-1">
+<i class="fa-solid fa-clipboard-user"></i> Attendance Report
+</h5>
+
+<p class="text-muted mb-0">
+<strong>{{ subject.name }}</strong> – {{ subject.classroom.name }}
+</p>
+
+</div>
+
+</div>
+
+<!-- BODY -->
+
+<div class="card-body">
+
+<div class="table-responsive">
+
+<table class="table table-hover align-middle">
+
+<thead class="table-light">
+
+<tr>
+<th style="width:70px;">No</th>
+<th>Student</th>
+<th>Date</th>
+<th class="text-center">Status</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for a in attendance %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td>
+
+<strong>ID: {{ a.student.student_id }}</strong><br>
+
+<small class="text-muted">
+{{ a.student.application.full_name|default:a.student.user.username }}
+</small>
+
+</td>
+
+<td>
+{{ a.date|date:"M d, Y" }}
+</td>
+
+<td class="text-center">
+
+{% if a.status %}
+
+<span class="badge bg-success">
+✔ Present
+</span>
+
+{% else %}
+
+<span class="badge bg-danger">
+✖ Absent
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="4" class="text-center text-muted">
+No attendance records available
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+<!-- ACTION BUTTON -->
+
+<div class="d-flex justify-content-end mt-3">
+
+<a href="{% url 'teacher_subject_students' subject.id %}"
+   class="btn btn-secondary">
+
+<i class="fa-solid fa-backward-step"></i> Back
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

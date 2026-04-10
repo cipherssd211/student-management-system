@@ -1,0 +1,585 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block sidebar %}
+{% include "includes/teacher_sidebar.html" %}
+{% endblock %}
+{% block content %}
+
+<style>
+
+:root{
+--primary:#2a5298;
+--soft-bg:#f4f6f9;
+}
+
+body{
+background:var(--soft-bg);
+}
+
+/* HEADER */
+
+.dashboard-header{
+background:linear-gradient(135deg,#1e3c72,#2a5298);
+color:white;
+border-radius:14px;
+padding:25px;
+margin-bottom:25px;
+}
+
+/* PROFILE */
+
+.profile-img{
+width:130px;
+height:130px;
+object-fit:cover;
+border-radius:50%;
+border:3px solid #0d6efd;
+box-shadow:0 8px 18px rgba(0,0,0,0.25);
+object-position:center top;
+}
+
+/* CARDS */
+
+.card{
+border-radius:14px;
+border:none;
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-3px);
+}
+
+/* STATS */
+
+.stat-card{
+padding:20px;
+border-radius:14px;
+color:white;
+text-align:center;
+box-shadow:0 6px 16px rgba(0,0,0,0.15);
+}
+
+.stat-card h4{
+margin:5px 0 0;
+font-weight:700;
+}
+
+.bg-subjects{background:linear-gradient(135deg,#198754,#28a745);}
+.bg-classes{background:linear-gradient(135deg,#0d6efd,#3b82f6);}
+.bg-notices{background:linear-gradient(135deg,#fd7e14,#f59e0b);}
+
+/* TABLE IMPROVEMENT */
+
+.subject-table{
+border-radius:10px;
+overflow:hidden;
+}
+
+.subject-table thead{
+background:#0d6efd;
+color:white;
+}
+
+.subject-table th,
+.subject-table td{
+vertical-align:middle;
+}
+
+.action-btn{
+margin:3px;
+min-width:90px;
+}
+
+/* MATERIAL UPLOAD */
+
+.upload-box{
+border:2px dashed #dee2e6;
+border-radius:12px;
+padding:25px;
+text-align:center;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.dashboard-header{
+text-align:center;
+}
+
+.profile-img{
+width:100px;
+height:100px;
+}
+
+.stat-card{
+margin-bottom:15px;
+}
+
+}
+
+
+/* HEADER CLOCK */
+
+.header-clock{
+text-align:right;
+}
+
+.header-clock .clock-time{
+font-size:26px;
+font-weight:700;
+color:white;
+}
+
+.header-clock .clock-date{
+font-size:13px;
+opacity:0.9;
+}
+
+/* MOBILE RESPONSIVE */
+
+@media(max-width:768px){
+
+.dashboard-header{
+flex-direction:column;
+align-items:flex-start;
+}
+
+.header-clock{
+text-align:left;
+margin-top:10px;
+}
+
+}
+
+.sidebar a i{
+width:26px;
+text-align:center;
+font-size:20px;
+}
+
+</style>
+
+
+<div class="container mt-4">
+
+<!-- HEADER -->
+
+<div class="dashboard-header d-flex justify-content-between align-items-center flex-wrap">
+
+<div>
+
+<h3 class="fw-bold mb-1">Teacher Dashboard</h3>
+
+<p class="mb-0 opacity-75">
+Welcome, {{ teacher.user.get_full_name|default:teacher.user.username }}
+</p>
+
+</div>
+
+<!-- TIMER -->
+
+<div class="header-clock text-end">
+
+<div class="clock-time" id="teacherClock">--:--:--</div>
+<div class="clock-date" id="teacherDate">Loading date...</div>
+</div>
+</div>
+
+<audio id="noticeSound">
+    <source src="{% static 'sounds/notification.mp3' %}" type="audio/mpeg">
+</audio>
+
+<!-- TEACHER PROFILE -->
+
+<div class="card mb-4 text-center">
+
+<div class="card-body">
+
+{% if teacher.application and teacher.application.passport_photo %}
+<img src="{{ teacher.application.passport_photo.url }}" class="profile-img mb-3">
+{% endif %}
+
+<h5 class="fw-bold mb-1">
+{{ teacher.user.get_full_name|default:teacher.user.username }}
+</h5>
+
+<p class="text-muted mb-1">@{{ teacher.user.username }}</p>
+<p class="text-muted mb-1">{{ teacher.user.email }}</p>
+
+{% if teacher.application %}
+<p class="text-muted mb-3">
+<i class="fa-sharp fa-solid fa-phone"></i> {{ teacher.application.phone_number }}
+</p>
+{% endif %}
+
+<span class="badge bg-primary px-3 py-2">   
+Teacher ID: {{ teacher.teacher_id }}
+</span>
+
+</div>
+
+</div>
+
+
+<!-- STATS -->
+
+<div class="row mb-4">
+
+<div class="col-md-4 col-12 mb-3">
+<div class="stat-card bg-subjects">
+<small>Subjects</small>
+<h4>{{ teacher.subjects.count }}</h4>
+</div>
+</div>
+
+<div class="col-md-4 col-12 mb-3">
+<div class="stat-card bg-classes">
+<small>Classes</small>
+<h4>{{ subjects_by_group|length }}</h4>
+</div>
+</div>
+
+<div class="col-md-4 col-12 mb-3">
+<div class="stat-card bg-notices">
+<small>Notices</small>
+<h4>{{ teacher_notices|length }}</h4>
+</div>
+</div>
+</div>
+
+<!-- SUBJECT OVERVIEW -->
+
+<h5 class="fw-bold mb-4">
+<i class="fa-solid fa-book"></i> Assigned Subjects Overview
+</h5>
+
+{% if subjects_by_group %}
+
+{% for class_name, subjects in subjects_by_group.items %}
+
+<h6 class="fw-bold text-primary mb-3">
+{{ class_name }}
+</h6>
+
+<div class="row g-3 mb-4">
+
+{% for subject in subjects %}
+
+<div class="col-md-4 col-sm-6">
+
+<div class="card subject-card h-100">
+
+<div class="card-body text-center">
+
+<h5 class="fw-bold mb-3">
+{{ subject.name }}
+</h5>
+
+<div class="d-grid gap-2">
+
+<a href="{% url 'teacher_subject_students' subject.id %}"
+class="btn btn-outline-primary btn-sm">
+<i class="fa-solid fa-graduation-cap"></i> Students
+</a>
+
+<a href="{% url 'teacher_bulk_marks' subject.id %}"
+class="btn btn-outline-success btn-sm">
+<i class="fa-solid fa-marker"></i> Marks
+</a>
+
+<a href="{% url 'teacher_bulk_attendance' subject.id %}"
+class="btn btn-outline-warning btn-sm">
+<i class="fa-solid fa-clipboard-user"></i> Attendance
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p class="text-muted">
+No subjects assigned.
+</p>
+
+{% endif %}
+
+
+
+<!-- TEACHER TIMETABLE -->
+
+<div class="card mt-4">
+
+<div class="card-header fw-bold">
+<i class="fa-solid fa-business-time"></i> Teacher Timetable
+</div>
+
+<div class="card-body table-responsive">
+
+<table class="table table-bordered">
+
+<thead>
+<tr>
+<th>Day</th>
+<th>Subject</th>
+<th>Class</th>
+<th>Time</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for t in teacher_timetable %}
+
+<tr>
+
+<td>{{ t.day }}</td>
+<td>{{ t.subject.name }}</td>
+<td>{{ t.classroom }}</td>
+<td>{{ t.start_time }} - {{ t.end_time }}</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="4" class="text-center text-muted">
+No timetable assigned
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+</div>
+
+
+<!-- STUDY MATERIAL -->
+
+<div class="card mt-4 mb-5">
+
+<div class="card-header fw-bold">
+<i class="fa-solid fa-align-justify"></i> Upload Study Materials
+</div>
+
+<div class="card-body">
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+
+<input type="text" name="title" class="form-control mb-2" placeholder="Material Title" required>
+
+<select name="subject_id" class="form-control mb-2" required>
+    <option value="">Select Subject</option>
+    {% for subject in teacher.subjects.all %}
+        <option value="{{ subject.id }}">{{ subject.name }}</option>
+    {% endfor %}
+</select>
+
+<select name="material_type" class="form-control mb-2" required>
+    <option  value="SELECT">--Select From The Option--</option>
+    <option value="PDF">PDF</option>
+    <option value="PPT">PPT</option>
+    <option value="VIDEO">Video</option>
+    <option value="NOTES">Notes</option>
+</select>
+
+<input type="file" name="material" class="form-control mb-2" required>
+
+<button class="btn btn-primary">Upload Material</button>
+</form>
+
+</div>
+</div>
+</div>
+
+<div class="card mt-4">
+
+<div class="card-header fw-bold">
+<i class="fa-solid fa-align-justify"></i> My Uploaded Materials
+</div>
+
+<div class="card-body">
+
+{% for m in materials %}
+
+<div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+
+<div>
+<strong>{{ m.title }}</strong><br>
+<small class="text-muted">
+{{ m.subject.name }} • {{ m.material_type }}
+</small>
+</div>
+
+<div class="d-flex gap-2">
+
+<a href="{{ m.file.url }}" target="_blank" class="btn btn-sm btn-success">
+<i class="fa-solid fa-eye-slash"></i> View
+</a>
+
+<a href="{% url 'teacher_delete_material' m.id %}" class="btn btn-sm btn-danger">
+<i class="fa-solid fa-trash"></i> Delete
+</a>
+
+</div>
+</div>
+
+{% empty %}
+
+<p class="text-muted">No materials uploaded</p>
+
+{% endfor %}
+
+</div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+new Chart(document.getElementById('performanceChart'),{
+
+type:'bar',
+
+data:{
+labels:{{ subject_labels|safe }},
+datasets:[{
+label:'Average Marks',
+data:{{ subject_averages|safe }},
+backgroundColor:'#0d6efd'
+}]
+},
+
+options:{
+responsive:true
+}
+
+});
+
+</script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+function updateTeacherClock(){
+
+const now = new Date();
+
+/* same format as student */
+
+const time = now.toLocaleTimeString([],{
+hour:'2-digit',
+minute:'2-digit',
+second:'2-digit'
+});
+
+const date = now.toLocaleDateString([],{
+weekday:'long',
+year:'numeric',
+month:'long',
+day:'numeric'
+});
+
+const clock = document.getElementById("teacherClock");
+const dateBox = document.getElementById("teacherDate");
+
+if(clock && dateBox){
+clock.innerText = time;
+dateBox.innerText = date;
+}
+
+}
+
+updateTeacherClock();
+setInterval(updateTeacherClock,1000);
+
+});
+
+</script>
+
+<!--// NOTICE CHECKERk-->
+<script>
+
+let lastNoticeId = localStorage.getItem("lastNoticeId") || null;
+
+function checkNotice(){
+
+fetch("/check-notice/")
+.then(res => res.json())
+.then(data => {
+
+if(!data.id) return;
+
+if(lastNoticeId === null){
+    lastNoticeId = data.id;
+    localStorage.setItem("lastNoticeId", data.id);
+    return;
+}
+
+if(data.id != lastNoticeId){
+
+    // 🔊 SOUND
+    const sound = document.getElementById("noticeSound");
+
+    if(sound){
+        sound.currentTime = 0;
+        sound.play().catch(() => {
+            console.log("Autoplay blocked");
+        });
+    }
+
+    // 🔴 BADGE UPDATE
+    let badge = document.getElementById("noticeBadge");
+    if(badge){
+        badge.innerText = parseInt(badge.innerText || "0") + 1;
+        badge.style.display = "inline-block";
+    }
+
+    // ALERT
+    alert("New Notice: " + data.title);
+
+    lastNoticeId = data.id;
+    localStorage.setItem("lastNoticeId", data.id);
+}
+
+});
+
+}
+
+// ⏱ RUN EVERY 10 SEC
+setInterval(checkNotice, 10000);
+
+</script>
+
+<script>
+document.addEventListener("click", function(){
+    const sound = document.getElementById("noticeSound");
+    if(sound){
+        sound.play().then(() => {
+            sound.pause();
+            sound.currentTime = 0;
+        }).catch(()=>{});
+    }
+}, {once:true});
+</script>
+
+{% endblock %}

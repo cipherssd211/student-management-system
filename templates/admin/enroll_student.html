@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+
+<h2>Confirm Student Enrollment</h2>
+
+<p>
+<b>Name:</b> {{ application.full_name }}<br>
+<b>Level:</b> {{ application.applied_level }}<br>
+<b>Stream:</b> {{ application.applied_stream|default:"N/A" }}
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <input type="submit" value="Confirm Enrollment" class="default">
+    <a href="../" class="button cancel-link">Cancel</a>
+</form>
+
+{% endblock %}

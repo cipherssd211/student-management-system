@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3>Manage Subjects</h3>
+<a href="{% url 'admin_add_subject' %}" class="btn btn-success mb-3">+ Add Subject</a>
+
+<table class="table table-bordered">
+<tr>
+    <th>Subject</th>
+    <th>Class</th>
+    <th>Actions</th>
+</tr>
+
+{% for s in subjects %}
+<tr>
+    <td>{{ s.name }}</td>
+    <td>{{ s.classroom.name }}</td>
+    <td>
+        <a href="{% url 'admin_edit_subject' s.id %}" class="btn btn-warning btn-sm">Edit</a>
+        <a href="{% url 'admin_delete_subject' s.id %}" class="btn btn-danger btn-sm"
+           onclick="return confirm('Delete subject?')">Delete</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

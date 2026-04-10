@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3>Edit Student</h3>
+
+<form method="post">
+    {% csrf_token %}
+    <p><strong>{{ student.user.username }}</strong></p>
+
+    <select class="form-control mb-2" name="course">
+        {% for c in courses %}
+            <option value="{{ c.id }}" {% if c == student.course %}selected{% endif %}>
+                {{ c.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <button class="btn btn-primary">Update</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+{% include "includes/teacher_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm">
+
+<!-- HEADER -->
+
+<div class="card-header bg-white">
+
+<h5 class="fw-bold mb-0">
+📊 Student Performance
+</h5>
+
+</div>
+
+<div class="card-body">
+
+<div class="row">
+
+<!-- PROFILE -->
+
+<div class="col-md-4 text-center">
+
+{% if student.application.passport_photo %}
+<img src="{{ student.application.passport_photo.url }}"
+     class="rounded-circle mb-3"
+     style="width:120px;height:120px;object-fit:cover;">
+{% endif %}
+
+<h5 class="fw-bold">
+{{ student.application.full_name }}
+</h5>
+
+<p class="text-muted">
+ID: {{ student.student_id }}
+</p>
+
+</div>
+
+<!-- STATS -->
+
+<div class="col-md-8">
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<div class="card text-center">
+
+<div class="card-body">
+
+<h6 class="text-muted">Attendance</h6>
+
+<h3 class="text-success">
+{{ attendance_percentage }}%
+</h3>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<div class="card text-center">
+
+<div class="card-body">
+
+<h6 class="text-muted">Average Marks</h6>
+
+<h3 class="text-primary">
+{{ average_marks }}
+</h3>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- SUBJECT MARKS -->
+
+<h6 class="fw-bold mt-4">
+📚 Subject Performance
+</h6>
+
+<div class="table-responsive">
+
+<table class="table table-hover">
+
+<thead class="table-light">
+
+<tr>
+
+<th>Subject</th>
+<th class="text-center">Marks</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for m in marks %}
+
+<tr>
+
+<td>{{ m.subject.name }}</td>
+
+<td class="text-center fw-bold">
+{{ m.marks }}
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="2" class="text-center text-muted">
+No marks available
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+<!-- CHART -->
+
+<div class="mt-5">
+
+<h6 class="fw-bold mb-3">
+📈 Performance Chart
+</h6>
+
+<canvas id="performanceChart"></canvas>
+
+</div>
+
+<!-- BACK -->
+
+<div class="mt-4 text-end">
+
+<a href="{% url 'teacher_dashboard' %}"
+class="btn btn-secondary">
+
+⬅ Back
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const ctx = document.getElementById('performanceChart');
+
+new Chart(ctx, {
+
+type: 'bar',
+
+data: {
+
+labels: {{ subject_names|safe }},
+
+datasets: [{
+
+label: 'Marks',
+
+data: {{ subject_marks|safe }},
+
+backgroundColor: '#0d6efd'
+
+}]
+
+},
+
+options: {
+
+responsive: true,
+
+plugins: {
+
+legend: {
+
+display: false
+
+}
+
+}
+
+}
+
+});
+
+</script>
+
+{% endblock %}

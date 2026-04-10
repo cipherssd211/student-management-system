@@ -1,0 +1,59 @@
+<h5>Teacher Panel</h5>
+
+<a href="{% url 'teacher_dashboard' %}">
+<i class="fa-solid fa-gauge"></i> Dashboard
+</a>
+
+<a href="{% url 'teacher_weekly_timetable' %}">
+<i class="fa-solid fa-business-time"></i> Timetable
+</a>
+
+<a href="{% url 'teacher_subjects' %}">
+<i class="fa-solid fa-book"></i> My Subjects
+</a>
+
+<a href="{% url 'teacher_students' %}">
+<i class="fa-solid fa-graduation-cap"></i> Students
+</a>
+
+<!--<a href="{% url 'teacher_dashboard' %}">
+<i class="fa-solid fa-marker"></i> Marks
+</a>
+
+<a href="{% url 'teacher_dashboard' %}">
+<i class="fa-solid fa-clipboard-user"></i> Attendance
+</a>-->
+
+<a href="{% url 'teacher_notices' %}">
+    <i class="fa-solid fa-bell"></i> Notices
+    <span id="noticeBadge"
+          style="background:red;color:white;border-radius:50%;padding:3px 7px;font-size:12px;display:none;">
+        0
+    </span>
+</a>
+
+<a href="{% url 'teacher_create_notice' %}">
+<i class="fa-solid fa-bell"></i> Post Notice
+</a>
+
+<a href="{% url 'teacher_materials' %}">
+<i class="fa-solid fa-align-justify"></i> Materials
+</a>
+
+<a href="{% url 'teacher_leave' %}">
+<i class="fa-solid fa-calendar-days"></i> Leave
+</a>
+
+<a href="{% url 'teacher_performance' %}">
+<i class="fa-solid fa-chart-bar"></i> Performance
+</a>
+
+<a href="{% url 'teacher_create_result' %}">
+<i class="fa-solid fa-chart-line"></i> Generate Result
+</a>
+
+<hr style="border-color:#444;">
+
+<a href="{% url 'logout' %}">
+<i class="fa-solid fa-right-from-bracket"></i> Logout
+</a>

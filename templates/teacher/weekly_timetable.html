@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block sidebar %}
+{% include "includes/teacher_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold mb-4"><i class="fa-brands fa-buffer"></i> Weekly Teaching Schedule</h3>
+
+<div class="card">
+<div class="card-body table-responsive">
+
+<table class="table table-bordered text-center">
+
+<thead class="table-light">
+<tr>
+<th>Time</th>
+<th>Monday</th>
+<th>Tuesday</th>
+<th>Wednesday</th>
+<th>Thursday</th>
+<th>Friday</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for slot in timetable_slots %}
+<tr>
+<td class="fw-bold">{{ slot.time }}</td>
+
+<td>{% if slot.mon %}{{ slot.mon.subject.name }}<br><small>{{ slot.mon.classroom }}</small>{% endif %}</td>
+<td>{% if slot.tue %}{{ slot.tue.subject.name }}<br><small>{{ slot.tue.classroom }}</small>{% endif %}</td>
+<td>{% if slot.wed %}{{ slot.wed.subject.name }}<br><small>{{ slot.wed.classroom }}</small>{% endif %}</td>
+<td>{% if slot.thu %}{{ slot.thu.subject.name }}<br><small>{{ slot.thu.classroom }}</small>{% endif %}</td>
+<td>{% if slot.fri %}{{ slot.fri.subject.name }}<br><small>{{ slot.fri.classroom }}</small>{% endif %}</td>
+</tr>
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+</div>
+
+{% endblock %}

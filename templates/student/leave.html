@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+{% include "includes/student_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h4 class="fw-bold mb-3">My Leaves</h4>
+
+<a href="{% url 'student_apply_leave' %}" class="btn btn-success mb-3">
+<i class="fa-solid fa-plus"></i> Apply Leave
+</a>
+
+<div class="card shadow-sm">
+<div class="table-responsive">
+
+<table class="table table-bordered align-middle mb-0">
+
+<thead class="table-dark">
+<tr>
+<th>Reason</th>
+<th>From</th>
+<th>To</th>
+<th>Status</th>
+<th>Admin Remarks</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for leave in leaves %}
+
+<tr>
+
+<td>{{ leave.reason }}</td>
+<td>{{ leave.start_date }}</td>
+<td>{{ leave.end_date }}</td>
+
+<!-- STATUS -->
+<td>
+{% if leave.status == "APPROVED" %}
+<span class="badge bg-success">Approved</span>
+
+{% elif leave.status == "REJECTED" %}
+<span class="badge bg-danger">Rejected</span>
+
+{% elif leave.status == "CANCELLED" %}
+<span class="badge bg-secondary">Cancelled</span>
+
+{% else %}
+<span class="badge bg-warning">Pending</span>
+{% endif %}
+</td>
+
+<!-- ADMIN REMARK -->
+<td>
+{{ leave.admin_remark|default:"-" }}
+</td>
+
+<!-- ACTIONS -->
+<td>
+
+{% if leave.status == "PENDING" %}
+
+<a href="{% url 'student_edit_leave' leave.id %}"
+class="btn btn-sm btn-warning">
+<i class="fa-solid fa-pen"></i> Edit
+</a>
+
+<a href="{% url 'student_cancel_leave' leave.id %}"
+class="btn btn-sm btn-danger"
+onclick="return confirm('Are you sure you want to cancel this leave?')">
+<i class="fa-solid fa-xmark"></i> Cancel
+</a>
+
+{% else %}
+
+<span class="text-muted fw-semibold">Locked</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="6" class="text-center text-muted py-4">
+No leave requests yet
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+</div>
+
+</div>
+
+{% endblock %}

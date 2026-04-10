@@ -1,0 +1,16 @@
+<h2>Your Marks</h2>
+
+<table border="1">
+<tr>
+    <th>Subject</th>
+    <th>Marks</th>
+</tr>
+{% for m in marks %}
+<tr>
+    <td>{{ m.subject }}</td>
+    <td>{{ m.marks }}</td>
+</tr>
+{% empty %}
+<tr><td colspan="2">No marks available</td></tr>
+{% endfor %}
+</table>

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block sidebar %}
+{% include "includes/teacher_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold mb-4"><i class="fa-solid fa-book"></i> My Subjects</h3>
+
+<div class="row">
+{% for subject in subjects %}
+<div class="col-md-4 mb-3">
+<div class="card p-3 text-center">
+<h5>{{ subject.name }}</h5>
+<p class="text-muted">{{ subject.level }} {{ subject.stream }}</p>
+</div>
+</div>
+{% empty %}
+<p>No subjects assigned</p>
+{% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block sidebar %}
+{% include "includes/teacher_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm">
+
+<div class="card-header bg-white d-flex justify-content-between align-items-center">
+
+<h5 class="fw-bold mb-0">
+<i class="fa-solid fa-graduation-cap"></i> {{ subject.name }} - Students
+</h5>
+
+</div>
+
+<div class="card-body">
+
+<!-- ACTION BUTTONS -->
+
+<div class="mb-4">
+
+<a href="{% url 'teacher_bulk_marks' subject.id %}"
+class="btn btn-success me-2">
+<i class="fa-solid fa-envelopes-bulk"></i> Bulk Marks
+</a>
+
+<a href="{% url 'teacher_bulk_attendance' subject.id %}"
+class="btn btn-warning me-2">
+<i class="fa-solid fa-clipboard-user"></i> Bulk Attendance
+</a>
+
+<a href="{% url 'teacher_marks_report' subject.id %}"
+class="btn btn-primary me-2">
+<i class="fa-solid fa-chart-bar"></i> Marks Report
+</a>
+
+<a href="{% url 'teacher_attendance_report' subject.id %}"
+class="btn btn-info text-white">
+<i class="fa-solid fa-clipboard-user"></i> Attendance Report
+</a>
+
+</div>
+
+<!-- STUDENT TABLE -->
+   
+<div class="table-responsive">
+
+<table class="table table-hover align-middle">
+
+<thead class="table-light">
+
+<tr>
+<th style="width:70px;">No</th>
+<th>Student</th>
+<th class="text-center">Performance</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for student in students %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td>
+
+<strong>ID: {{ student.student_id }}</strong><br>
+
+<small class="text-muted">
+{{ student.application.full_name|default:student.user.username }}
+</small>
+
+</td>
+
+<td class="text-center">
+
+<a href="{% url 'student_performance' student.id %}"
+class="btn btn-sm btn-outline-primary">
+
+<i class="fa-solid fa-chart-bar"></i> View
+
+</a>
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="3" class="text-center text-muted">
+No students found.
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+<!-- BACK BUTTON -->
+
+<a href="{% url 'teacher_dashboard' %}"
+class="btn btn-secondary mt-3">
+
+⬅ Back to Dashboard
+
+</a>
+
+</div>
+
+</div>
+
+{% endblock %}

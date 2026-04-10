@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block sidebar %}
+{% include "includes/teacher_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold mb-4"><i class="fa-solid fa-chart-bar"></i> Performance Overview</h3>
+
+<canvas id="performanceChart"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById('performanceChart'),{
+type:'bar',
+data:{
+labels:{{ subject_labels|safe }},
+datasets:[{
+label:'Average Marks',
+data:{{ subject_averages|safe }},
+backgroundColor:'#0d6efd'
+}]
+}
+});
+</script>
+
+{% endblock %}

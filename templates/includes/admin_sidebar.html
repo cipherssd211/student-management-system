@@ -1,0 +1,39 @@
+<h5 class="text-center mb-4">Admin Panel</h5>
+
+<a href="{% url 'admin_dashboard' %}">
+<i class="fa-solid fa-gauge"></i> Dashboard
+</a>
+
+<!--<a href="{% url 'student_notices' %}">
+    <i class="fa-solid fa-bell"></i> Notices
+    <span id="noticeBadge"
+          style="background:red;color:white;border-radius:50%;padding:3px 7px;font-size:12px;display:none;">
+        0
+    </span>
+</a>
+
+<!--<a href="{% url 'admin_students' %}">
+<i class="fa-solid fa-graduation-cap"></i> Students
+</a>
+
+<a href="{% url 'admin_teachers' %}">
+<i class="fa-solid fa-chalkboard-user"></i> Teachers
+</a>
+
+<a href="{% url 'admin_classes' %}">
+<i class="fa-solid fa-school"></i> Classes
+</a>
+
+<a href="{% url 'admin_subjects' %}">
+<i class="fa-solid fa-book"></i> Subjects
+</a>-- IGNORE -->
+
+<a href="{% url 'admin_fees' %}"><i class="fa-solid fa-money-bill"></i> Fees</a>
+
+<a href="{% url 'admin_reports' %}"><i class="fa-solid fa-chart-line"></i> Reports</a>
+
+<hr style="border-color:#444;">
+
+<a href="/admin/"><i class="fa-solid fa-gear"></i> System Settings</a>
+
+<a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3>Edit Class</h3>
+
+<form method="post">
+    {% csrf_token %}
+    <input class="form-control mb-2" name="name" value="{{ classroom.name }}" required>
+    <button class="btn btn-primary">Update</button>
+</form>
+
+{% endblock %}

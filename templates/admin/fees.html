@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block sidebar %}
+{% include "includes/admin_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+:root{
+--primary:#2a5298;
+--soft-bg:#f4f6f9;
+}
+
+body{
+background:var(--soft-bg);
+}
+
+/* HEADER */
+.page-header{
+background:linear-gradient(135deg,#1e3c72,#2a5298);
+color:white;
+padding:20px;
+border-radius:14px;
+margin-bottom:25px;
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* STAT CARDS */
+.stat-card{
+border-radius:14px;
+padding:20px;
+color:white;
+text-align:center;
+box-shadow:0 6px 16px rgba(0,0,0,0.15);
+transition:.3s;
+}
+
+.stat-card:hover{
+transform:translateY(-4px);
+}
+
+/* TABLE CARD */
+.fee-card{
+border:none;
+border-radius:14px;
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+overflow:hidden;
+}
+
+/* TABLE */
+.table thead{
+background:#0d6efd;
+color:white;
+}
+
+.table tbody tr:hover{
+background:#f1f5ff;
+transition:.2s;
+}
+
+/* BADGES */
+.badge-paid{
+background:linear-gradient(135deg,#198754,#28a745);
+padding:6px 12px;
+border-radius:20px;
+}
+
+.badge-pending{
+background:linear-gradient(135deg,#dc3545,#ff4d4d);
+padding:6px 12px;
+border-radius:20px;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+.page-header{
+text-align:center;
+}
+}
+
+</style>
+
+<div class="container mt-4">
+
+<!-- HEADER -->
+<div class="page-header d-flex justify-content-between align-items-center flex-wrap">
+
+<div>
+<h3 class="fw-bold mb-1">
+<i class="fa-solid fa-money-bill-wave me-2"></i> Fees Management
+</h3>
+<p class="mb-0 opacity-75">Manage student payments and track fee status</p>
+</div>
+
+</div>
+
+<!-- STATS -->
+<div class="row mb-4">
+
+<div class="col-md-6 mb-3">
+<div class="stat-card bg-success">
+<small><i class="fa-solid fa-circle-check me-1"></i> Total Fees Collected</small>
+<h3>{{ total_collected }}</h3>
+</div>
+</div>
+
+<div class="col-md-6 mb-3">
+<div class="stat-card bg-danger">
+<small><i class="fa-solid fa-hourglass-half me-1"></i> Total Pending Fees</small>
+<h3>{{ total_pending }}</h3>
+</div>
+</div>
+
+</div>
+
+<!-- TABLE -->
+<div class="card fee-card">
+
+<div class="card-header fw-bold bg-white">
+<i class="fa-solid fa-table me-2"></i> Fee Records
+</div>
+
+<div class="card-body table-responsive">
+
+<table class="table align-middle mb-0">
+
+<thead>
+<tr>
+<th>#</th>
+<th>Student</th>
+<th>Amount</th>
+<th>Status</th>
+<th>Date</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for fee in fees %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td>
+<strong>{{ fee.student }}</strong>
+</td>
+
+<td>
+<span class="fw-bold text-primary">
+{{ fee.amount }}
+</span>
+</td>
+
+<td>
+{% if fee.paid %}
+<span class="badge badge-paid">
+<i class="fa-solid fa-check me-1"></i> Paid
+</span>
+{% else %}
+<span class="badge badge-pending">
+<i class="fa-solid fa-clock me-1"></i> Pending
+</span>
+{% endif %}
+</td>
+
+<td>
+<i class="fa-regular fa-calendar me-1"></i>
+{{ fee.date_paid|default:"-" }}
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="5" class="text-center py-4 text-muted">
+<i class="fa-solid fa-face-frown me-2"></i>
+No fee records available
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

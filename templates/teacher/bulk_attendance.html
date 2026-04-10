@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block sidebar %}
+{% include "includes/teacher_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.attendance-card{
+border-radius:12px;
+box-shadow:0 6px 18px rgba(0,0,0,0.08);
+}
+
+.present-checkbox{
+transform:scale(1.4);
+cursor:pointer;
+}
+
+.student-row:hover{
+background:#f8f9fa;
+}
+
+</style>
+
+<div class="card attendance-card">
+
+<!-- HEADER -->
+
+<div class="card-header bg-white">
+
+<h5 class="fw-bold mb-0">
+<i class="fa-solid fa-clipboard-user"></i> Attendance – {{ subject.name }}
+</h5>
+
+</div>
+
+<!-- BODY -->
+
+<div class="card-body">
+
+<form method="post">
+
+{% csrf_token %}
+
+<!-- LECTURES HELD -->
+
+<div class="mb-4">
+
+<label class="form-label fw-bold">
+Lectures Conducted Today
+</label>
+
+<select name="lectures_held" class="form-select" required>
+<option value="0">-- Select total lecture conducted --</option>
+<option value="1">1 Lecture</option>
+<option value="2">2 Lectures (Double)</option>
+<option value="4">Half Day (4)</option>
+<option value="6">Full Day (6)</option>
+
+</select>
+
+</div>
+
+<!-- STUDENT TABLE -->
+
+<div class="table-responsive">
+
+<table class="table table-hover align-middle">
+
+<thead class="table-light">
+
+<tr>
+
+<th style="width:70px;">No</th>
+<th>Student</th>
+<th class="text-center">Present</th>
+<th class="text-center">Absent</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for student in students %}
+
+<tr class="student-row">
+
+<td>{{ forloop.counter }}</td>
+
+<td>
+
+<strong>ID: {{ student.student_id }}</strong><br>
+
+<small class="text-muted">
+{{ student.application.full_name }}
+</small>
+
+</td>
+
+<td class="text-center">
+
+<input
+type="checkbox"
+class="present-checkbox"
+name="attended_{{ student.id }}"
+value="yes"
+>
+
+</td>
+
+<td class="text-center text-danger fw-bold">
+
+<i class="fa-regular fa-circle-xmark"></i>
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="4" class="text-center text-muted">
+No students found
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+<!-- ACTION BUTTONS -->
+
+<div class="d-flex justify-content-end mt-3">
+
+<a href="{% url 'teacher_dashboard' %}"
+   class="btn btn-secondary me-2">
+
+Cancel
+
+</a>
+
+<button class="btn btn-success">
+
+<i class="fa-regular fa-floppy-disk"></i> Save Attendance
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}  

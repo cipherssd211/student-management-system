@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block sidebar %}
+{% include "includes/student_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold mb-4"><i class="fa-solid fa-money-bill-trend-up"></i> Fees</h3>
+
+<div class="card">
+<div class="card-body">
+
+{% for fee in fees %}
+<div class="mb-2">
+Amount: {{ fee.amount }} -
+{% if fee.paid %}
+<span class="text-success">Paid</span>
+{% else %}
+<span class="text-danger">Pending</span>
+{% endif %}
+</div>
+{% empty %}
+<p>No fee records</p>
+{% endfor %}
+
+</div>
+</div>
+
+{% endblock %}

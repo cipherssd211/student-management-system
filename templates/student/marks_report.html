@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block sidebar %}
+{% include "includes/student_sidebar.html" %}
+{% endblock %}
+{% block content %}
+
+<h3>My Marks</h3>
+
+<table class="table table-bordered">
+<tr>
+    <th>Subject</th>
+    <th>Marks</th>
+</tr>
+
+{% for m in marks %}
+<tr>
+    <td>{{ m.subject.name }}</td>
+    <td>{{ m.marks }}</td>
+</tr>
+{% empty %}
+<tr><td colspan="2">No marks available</td></tr>
+{% endfor %}
+</table>
+
+{% endblock %}

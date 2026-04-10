@@ -1,0 +1,309 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Student Management System</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+background:#f4f6fa;
+overflow-x:hidden;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+/* NAVBAR */
+
+.navbar{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+z-index:1001;
+padding:10px 20px;
+}
+
+/* SCHOOL HEADER */
+
+.school-header{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.school-logo{
+width:38px;
+height:38px;
+border-radius:50%;
+object-fit:cover;
+}
+
+.school-name{
+color:white;
+font-weight:600;
+font-size:18px;
+}
+
+/* USER PROFILE */
+
+.user-profile{
+display:flex;
+align-items:center;
+gap:8px;
+}
+
+.user-profile img{
+width:35px;
+height:35px;
+border-radius:50%;
+object-fit:cover;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+position:fixed;
+top:0;
+left:0;
+height:100vh;
+width:220px;
+background-color: rgba(16,17,19,0.97);
+padding-top:80px;
+transition:0.3s;
+z-index:1000;
+overflow-y:auto;
+}
+
+.sidebar h5{
+color:white;
+text-align:center;
+margin-bottom:20px;
+font-weight:600;
+}
+
+.sidebar a{
+display:block;
+padding:12px 22px;
+color:#cbd5f5;
+text-decoration:none;
+font-size:15px;
+border-left:3px solid transparent;
+transition:.2s;
+}
+
+.sidebar a:hover{
+background:#1e293b;
+color:white;
+border-left:3px solid #0d6efd;
+}
+
+/* MAIN CONTENT */
+
+.main-content{
+margin-left:220px;
+padding:90px 25px 40px 25px;
+min-height:100vh;
+}
+
+/* OVERLAY */
+
+.sidebar-overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.4);
+z-index:999;
+display:none;
+}
+
+/* FOOTER */
+
+.footer{
+text-align:center;
+padding:20px;
+color:#666;
+font-size:14px;
+}
+
+/* MOBILE */
+
+@media (max-width:768px){
+
+.sidebar{
+left:-240px;
+width:220px;
+}
+
+.sidebar.active{
+left:0;
+}
+
+.main-content{
+margin-left:0;
+padding:85px 15px;
+}
+
+.sidebar-overlay.active{
+display:block;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar navbar-dark bg-dark d-flex justify-content-between">
+
+<div class="d-flex align-items-center">
+
+<button class="btn btn-outline-light me-3" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+
+<div class="school-header">
+
+<img src="{% static 'images/school_logo.png' %}" class="school-logo">
+
+<span class="school-name">Schoolname</span>
+
+
+<div class="position-relative me-3">
+
+<i class="fa-solid fa-bell text-white fs-5"></i>
+
+<span id="notificationBadge"
+style="position:absolute; top:-5px; right:-10px;
+background:red; color:white;
+font-size:10px; padding:4px 7px;
+border-radius:50%; display:none;">
+0
+</span>
+
+</div>
+
+<audio id="notifySound">
+<source src="{% static 'sounds/notification.mp3' %}" type="audio/mpeg">
+</audio>
+
+</div>
+
+</div>
+
+{% if request.user.is_authenticated %}
+<span class="badge bg-primary px-3 py-2">
+    {{ request.user.username }}
+</span>
+{% endif %}
+</nav>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar" id="sidebar">
+
+{% block sidebar %}
+
+{% endblock %}
+
+</div>
+
+<!-- MOBILE OVERLAY -->
+
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- MAIN CONTENT -->
+
+<div class="main-content">
+
+{% block content %}
+
+{% endblock %}
+
+<div class="footer">
+
+© <script>document.write(new Date().getFullYear())</script>
+Schoolname Student Management System All Rights Reserved.
+
+</div>
+
+</div>
+
+<script>
+
+function toggleSidebar(){
+
+document.getElementById("sidebar").classList.toggle("active");
+document.getElementById("overlay").classList.toggle("active");
+
+}
+
+</script>
+
+<script>
+
+let lastId = null;
+
+function checkNotifications(){
+
+fetch("/notifications/")
+.then(res => res.json())
+.then(data => {
+
+const badge = document.getElementById("notificationBadge");
+const sound = document.getElementById("notifySound");
+
+if(!badge) return;
+
+if(data.notifications.length > 0){
+
+badge.style.display = "inline-block";
+badge.innerText = data.notifications.length;
+
+let latest = data.notifications[0];
+
+// 🔥 CHECK NEW NOTIFICATION
+if(lastId !== latest.id){
+
+// 🔊 PLAY SOUND
+if(sound){
+sound.currentTime = 0;
+sound.play().catch(()=>{});
+}
+
+// ALERT
+alert("🔔 " + latest.title);
+
+lastId = latest.id;
+}
+
+}else{
+badge.style.display = "none";
+}
+
+});
+
+}
+
+// RUN EVERY 5 SECONDS
+setInterval(checkNotifications, 5000);
+
+</script>
+
+</body>
+</html>

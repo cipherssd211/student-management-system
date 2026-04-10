@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+{% include "includes/admin_sidebar.html" %}
+{% endblock %}
+{% block content %}
+
+<div class="container mt-4">
+
+<h4 class="fw-bold mb-3"><i class="fa-solid fa-calendar-days"></i> Leave Calendar</h4>
+
+<div class="card p-3 shadow-sm">
+<div id="calendar"></div>
+</div>
+
+</div>
+
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+
+        initialView: 'dayGridMonth',
+
+        events: '/admin/leave-events/',
+
+        eventClick: function(info){
+            alert(info.event.title);
+        }
+
+    });
+
+    calendar.render();
+});
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+{% include "includes/student_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+:root{
+--primary:#2a5298;
+--soft-bg:#f4f6f9;
+}
+
+body{
+background:var(--soft-bg);
+}
+
+/* HEADER */
+.page-header{
+background:linear-gradient(135deg,#1e3c72,#2a5298);
+color:white;
+padding:20px;
+border-radius:14px;
+margin-bottom:25px;
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* FORM CARD */
+.form-card{
+border:none;
+border-radius:16px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+padding:25px;
+background:white;
+}
+
+/* INPUTS */
+.form-control, select{
+border-radius:10px;
+padding:10px;
+}
+
+.form-control:focus, select:focus{
+border-color:#2a5298;
+box-shadow:0 0 0 0.2rem rgba(42,82,152,0.15);
+}
+
+/* LABEL */
+label{
+margin-bottom:5px;
+}
+
+/* BUTTON */
+.submit-btn{
+background:linear-gradient(135deg,#1e3c72,#2a5298);
+border:none;
+padding:10px 18px;
+border-radius:10px;
+font-weight:600;
+transition:.3s;
+}
+
+.submit-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 8px 18px rgba(0,0,0,0.2);
+}
+
+/* SECTION TITLE */
+.section-title{
+font-weight:600;
+margin-bottom:10px;
+color:#2a5298;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+.page-header{
+text-align:center;
+}
+}
+
+</style>
+
+<div class="container mt-4">
+
+<!-- HEADER -->
+<div class="page-header">
+<h4 class="fw-bold mb-1">
+<i class="fa-solid fa-paper-plane me-2"></i> Apply Leave
+</h4>
+<p class="mb-0 opacity-75">Submit your leave request to admin for approval</p>
+</div>
+
+<!-- FORM -->
+<div class="form-card">
+
+<form method="POST">
+{% csrf_token %}
+
+<!-- STUDENT INFO -->
+<div class="section-title">
+<i class="fa-solid fa-user me-1"></i> Student Information
+</div>
+
+<div class="mb-3">
+<label class="fw-bold">Full Name : *</label>
+<input type="text" name="full_name" class="form-control" required>
+</div>
+
+<div class="mb-3">
+<label class="fw-bold">Enrollment Number : *</label>
+<input type="text" name="enrollment_number" class="form-control" required>
+</div>
+
+<!-- CLASS DETAILS -->
+<div class="section-title">
+<i class="fa-solid fa-school me-1"></i> Academic Details
+</div>
+
+<div class="row mb-3">
+
+<div class="col-md-4">
+<label class="fw-bold">Class Level : *</label>
+<select name="class_level" class="form-control" required>
+<option value="">Select</option>
+<option>Senior 1</option>
+<option>Senior 2</option>
+<option>Senior 3</option>
+<option>Senior 4</option>
+</select>
+</div>
+
+<div class="col-md-4">
+<label class="fw-bold">Section : *</label>
+<select name="section" class="form-control" required>
+<option value="">Select</option>
+<option>A</option>
+<option>B</option>
+<option>C</option>
+</select>
+</div>
+
+<div class="col-md-4">
+<label class="fw-bold">Stream (Only S3 & S4) : *</label>
+<select name="stream" class="form-control" required>
+<option value="">Select Stream</option>
+<option>None</option>
+<option>Science</option>
+<option>Arts</option>
+</select>
+</div>
+
+</div>
+
+<!-- REASON -->
+<div class="section-title"> 
+<i class="fa-solid fa-pen-to-square me-1"></i> Leave Reason
+</div>
+
+<div class="mb-3">
+<textarea name="reason" class="form-control" rows="4" placeholder="Explain your reason..." required></textarea>
+</div>
+
+<!-- DATES -->
+<div class="section-title">
+<i class="fa-solid fa-calendar-days me-1"></i> Leave Duration
+</div>
+
+<div class="row mb-4">
+
+<div class="col-md-6">
+<label class="fw-bold">Start Date : *</label>
+<input type="date" name="start_date" class="form-control" required>
+</div>
+
+<div class="col-md-6">
+<label class="fw-bold">End Date : *</label>
+<input type="date" name="end_date" class="form-control" required>
+</div>
+
+</div>
+
+<!-- SUBMIT -->
+<div class="text-end">
+<button class="btn submit-btn text-white">
+<i class="fa-solid fa-paper-plane me-1"></i> Submit Leave
+</button>
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script>
+
+document.querySelector("form").addEventListener("submit", function(e){
+
+    let valid = true;
+
+    // GET FIELDS
+    const fullName = document.querySelector('[name="full_name"]');
+    const enrollment = document.querySelector('[name="enrollment_number"]');
+    const classLevel = document.querySelector('[name="class_level"]');
+    const section = document.querySelector('[name="section"]');
+    const stream = document.querySelector('[name="stream"]');
+    const reason = document.querySelector('[name="reason"]');
+    const startDate = document.querySelector('[name="start_date"]');
+    const endDate = document.querySelector('[name="end_date"]');
+
+    // RESET STYLES
+    document.querySelectorAll(".form-control").forEach(el => {
+        el.style.border = "";
+    });
+
+    // VALIDATE TEXT INPUTS
+    if(fullName.value.trim() === ""){
+        fullName.style.border = "2px solid red";
+        valid = false;
+    }
+
+    if(enrollment.value.trim() === ""){
+        enrollment.style.border = "2px solid red";
+        valid = false;
+    }
+
+    if(reason.value.trim() === ""){
+        reason.style.border = "2px solid red";
+        valid = false;
+    }
+
+    // VALIDATE SELECTS
+    if(classLevel.value === ""){
+        classLevel.style.border = "2px solid red";
+        valid = false;
+    }
+
+    if(section.value === ""){
+        section.style.border = "2px solid red";
+        valid = false;
+    }
+
+    if(stream.value === ""){
+        stream.style.border = "2px solid red";
+        valid = false;
+    }
+
+    // VALIDATE DATES
+    if(startDate.value === ""){
+        startDate.style.border = "2px solid red";
+        valid = false;
+    }
+
+    if(endDate.value === ""){
+        endDate.style.border = "2px solid red";
+        valid = false;
+    }
+
+    // DATE LOGIC
+    if(startDate.value && endDate.value){
+        if(endDate.value < startDate.value){
+            alert("End date cannot be before start date ❌");
+            endDate.style.border = "2px solid red";
+            valid = false;
+        }
+    }
+
+    // FINAL CHECK
+    if(!valid){
+        e.preventDefault();
+        alert("⚠ Please fill all required fields correctly!");
+    }
+
+});
+
+</script>
+
+{% endblock %}
+

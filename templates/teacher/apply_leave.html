@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+{% include "includes/teacher_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<style>
+:root{
+    --primary:#2a5298;
+    --secondary:#1e3c72;
+    --bg:#f4f6f9;
+}
+
+body{
+    background:var(--bg);
+}
+
+/* CARD DESIGN */
+.form-card{
+    border:none;
+    border-radius:16px;
+    overflow:hidden;
+}
+
+/* HEADER */
+.form-header{
+    background:linear-gradient(135deg,var(--secondary),var(--primary));
+    color:white;
+    padding:20px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+/* INPUT STYLE */
+.form-control, select{
+    border-radius:10px;
+    padding:10px;
+    transition:0.3s;
+}
+
+.form-control:focus, select:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 6px rgba(42,82,152,0.3);
+}
+
+/* LABEL */
+label{
+    font-weight:600;
+    margin-bottom:5px;
+}
+
+/* SECTION TITLE */
+.section-title{
+    font-size:14px;
+    font-weight:bold;
+    color:#666;
+    margin-bottom:10px;
+    text-transform:uppercase;
+}
+
+/* BUTTON */
+.submit-btn{
+    background:linear-gradient(135deg,var(--secondary),var(--primary));
+    border:none;
+    padding:12px;
+    border-radius:10px;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.submit-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+</style>
+
+<div class="container mt-4">
+
+<div class="card shadow form-card">
+
+<!-- HEADER -->
+<div class="form-header">
+    <i class="fa-solid fa-calendar-check"></i> Apply Leave
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+{% csrf_token %}
+
+<!-- ================= PERSONAL INFO ================= -->
+<div class="section-title">Personal Information</div>
+
+<div class="row mb-3">
+
+<div class="col-md-6">
+<label><i class="fa-solid fa-user"></i> Full Name</label>
+<input type="text" name="full_name" class="form-control" placeholder="Enter full name" required>
+</div>
+
+<div class="col-md-6">
+<label><i class="fa-solid fa-id-badge"></i> Teacher ID</label>
+<input type="text" name="teacher_id" class="form-control" placeholder="Enter ID" required>
+</div>
+
+</div>
+
+<!-- ================= TEACHING INFO ================= -->
+<div class="section-title">Teaching Details</div>
+
+<div class="row mb-3">
+
+<div class="col-md-4">
+<label><i class="fa-solid fa-school"></i> Classes</label>
+<select name="classes_teaching" class="form-control" multiple required>
+<option>Senior 1</option>
+<option>Senior 2</option>
+<option>Senior 3</option>
+<option>Senior 4</option>
+</select>
+<small class="text-muted">Hold CTRL to select multiple</small>
+</div>
+
+<div class="col-md-4">
+<label><i class="fa-solid fa-layer-group"></i> Sections</label>
+<select name="sections" class="form-control" multiple required>
+<option>A</option>
+<option>B</option>
+<option>C</option>
+</select>
+</div>
+
+<div class="col-md-4">
+<label><i class="fa-solid fa-book"></i> Streams</label>
+<select name="streams" class="form-control" multiple>
+<option>Science</option>
+<option>Arts</option>
+</select>
+</div>
+
+</div>
+
+<!-- ================= LEAVE DETAILS ================= -->
+<div class="section-title">Leave Details</div>
+
+<div class="mb-3">
+<label><i class="fa-solid fa-pen"></i> Reason</label>
+<textarea name="reason" class="form-control" rows="3" placeholder="Enter reason for leave..." required></textarea>
+</div>
+
+<div class="row mb-4">
+
+<div class="col-md-6">
+<label><i class="fa-solid fa-calendar-day"></i> Start Date</label>
+<input type="date" name="start_date" class="form-control" required>
+</div>
+
+<div class="col-md-6">
+<label><i class="fa-solid fa-calendar-xmark"></i> End Date</label>
+<input type="date" name="end_date" class="form-control" required>
+</div>
+
+</div>
+
+<!-- BUTTON -->
+<button class="btn submit-btn w-100 text-white">
+<i class="fa-solid fa-paper-plane"></i> Submit Leave
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script>
+
+document.querySelector("form").addEventListener("submit", function(e){
+
+    let valid = true;
+
+    // GET FIELDS
+    const fullName = document.querySelector('[name="full_name"]');
+    const teacherId = document.querySelector('[name="teacher_id"]');
+    const classes = document.querySelector('[name="classes_teaching"]');
+    const sections = document.querySelector('[name="sections"]');
+    const streams = document.querySelector('[name="streams"]');
+    const reason = document.querySelector('[name="reason"]');
+    const startDate = document.querySelector('[name="start_date"]');
+    const endDate = document.querySelector('[name="end_date"]');
+
+    // RESET STYLES
+    document.querySelectorAll(".form-control").forEach(el => {
+        el.style.border = "";
+    });
+
+    // TEXT VALIDATION
+    if(fullName.value.trim() === ""){
+        fullName.style.border = "2px solid red";
+        valid = false;
+    }
+
+    if(teacherId.value.trim() === ""){
+        teacherId.style.border = "2px solid red";
+        valid = false;
+    }
+
+    if(reason.value.trim() === ""){
+        reason.style.border = "2px solid red";
+        valid = false;
+    }
+
+    // MULTI SELECT VALIDATION
+    function isSelected(select){
+        return Array.from(select.options).some(option => option.selected);
+    }
+
+    if(!isSelected(classes)){
+        classes.style.border = "2px solid red";
+        valid = false;
+    }
+
+    if(!isSelected(sections)){
+        sections.style.border = "2px solid red";
+        valid = false;
+    }
+
+    // Streams (optional BUT enforce if needed)
+    if(streams){
+        if(!isSelected(streams)){
+            streams.style.border = "2px solid red";
+            valid = false;
+        }
+    }
+
+    // DATE VALIDATION
+    if(startDate.value === ""){
+        startDate.style.border = "2px solid red";
+        valid = false;
+    }
+
+    if(endDate.value === ""){
+        endDate.style.border = "2px solid red";
+        valid = false;
+    }
+
+    if(startDate.value && endDate.value){
+        if(endDate.value < startDate.value){
+            alert("End date cannot be before start date ❌");
+            endDate.style.border = "2px solid red";
+            valid = false;
+        }
+    }
+
+    // FINAL BLOCK
+    if(!valid){
+        e.preventDefault();
+        alert("⚠ Please fill all required fields correctly!");
+    }
+
+});
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block sidebar %}
+{% include "includes/admin_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.admin-dashboard{
+    background:linear-gradient(135deg,#f4f6fb,#eef2f7);
+    min-height:100vh;
+}
+
+/* HEADER */
+h3{
+    letter-spacing:0.5px;
+}
+
+/* STAT CARDS */
+.stat-card{
+    border-radius:16px;
+    padding:22px;
+    color:white;
+    text-align:center;
+    box-shadow:0 8px 22px rgba(0,0,0,0.12);
+    transition:all 0.3s ease;
+    position:relative;
+    overflow:hidden;
+}
+
+.stat-card::after{
+    content:"";
+    position:absolute;
+    width:120%;
+    height:120%;
+    top:-50%;
+    left:-50%;
+    background:rgba(255,255,255,0.08);
+    transform:rotate(25deg);
+}
+
+.stat-card:hover{
+    transform:translateY(-5px) scale(1.02);
+    box-shadow:0 14px 30px rgba(0,0,0,0.2);
+}
+
+/* COLORS (GRADIENTS) */
+.bg-primary{background:linear-gradient(135deg,#1e3c72,#2a5298);}
+.bg-warning{background:linear-gradient(135deg,#f7971e,#ffd200);}
+.bg-dark{background:linear-gradient(135deg,#232526,#414345);}
+.bg-secondary{background:linear-gradient(135deg,#757f9a,#d7dde8);}
+
+/* CLOCK */
+.clock-time{
+    font-size:24px;
+    font-weight:700;
+    color:#2a5298;
+}
+
+.clock-date{
+    font-size:14px;
+    color:#666;
+}
+
+/* CALENDAR BUTTON */
+.calendar-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+
+    background:linear-gradient(135deg,#1e3c72,#2a5298);
+    color:white;
+
+    padding:10px 18px;
+    border-radius:12px;
+
+    text-decoration:none;
+    font-weight:600;
+    font-size:14px;
+
+    box-shadow:0 6px 15px rgba(0,0,0,0.15);
+    transition:all 0.3s ease;
+}
+
+.calendar-btn:hover{
+    transform:translateY(-3px);
+    box-shadow:0 12px 25px rgba(0,0,0,0.25);
+    background:linear-gradient(135deg,#2a5298,#1e3c72);
+    color:white;
+}
+
+/* CARD (CHARTS) */
+.card{
+    border:none;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    transition:all 0.3s ease;
+    background:rgba(255,255,255,0.95);
+    backdrop-filter:blur(6px);
+}
+
+.card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 14px 35px rgba(0,0,0,0.15);
+}
+
+/* CHART TITLES */
+.card h5{
+    font-weight:600;
+    margin-bottom:15px;
+}
+
+/* SECTION SPACING */
+.row{
+    margin-bottom:10px;
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+    .calendar-btn{
+        width:100%;
+        justify-content:center;
+    }
+}
+
+</style>
+
+</style>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+<div>
+<h3 class="fw-bold mb-1">Admin Dashboard</h3>
+<p class="text-muted mb-0">
+Welcome, {{ request.user.get_full_name|default:request.user.username }}
+</p>
+</div>
+
+<div class="d-flex align-items-center gap-3">
+
+<!-- CLOCK -->
+<div class="text-end">
+<div class="clock-time" id="adminClock">--:--:--</div>
+<div class="clock-date" id="adminDate">Loading...</div>
+</div>
+
+<!-- DJANGO ADMIN BUTTON -->
+<!--<a href="/admin/" class="btn btn-outline-primary">
+<i class="fa-solid fa-gear"></i> Django Admin
+</a>-->
+
+</div>
+
+</div>
+
+<!-- ===================== -->
+<!-- MAIN STATS -->
+<!-- ===================== -->
+<div class="row mb-4">
+
+<div class="col-md-3 mb-3">
+<div class="stat-card bg-primary">
+<small><i class="fa-solid fa-user-graduate"></i> Total Students</small>
+<h3>{{ students|default:0 }}</h3>
+</div>
+</div>
+
+<div class="col-md-3 mb-3">
+<div class="stat-card bg-success">
+<small><i class="fa-solid fa-chalkboard-user"></i> Total Teachers</small>
+<h3>{{ teachers|default:0 }}</h3>
+</div>
+</div>
+
+<div class="col-md-3 mb-3">
+<div class="stat-card bg-warning">
+<small><i class="fa-solid fa-school"></i> Total Classes</small>
+<h3>{{ classes|default:0 }}</h3>
+</div>
+</div>
+
+<div class="col-md-3 mb-3">
+<div class="stat-card bg-dark">
+<small><i class="fa-solid fa-users"></i> Total Users</small>
+<h3>{{ users|default:0 }}</h3>
+</div>
+</div>
+
+</div>
+
+<!-- ===================== -->
+<!-- LEAVE STATS -->
+<!-- ===================== -->
+<div class="row mb-4">
+
+<div class="col-md-3 mb-3">
+<div class="stat-card bg-success">
+<small><i class="fa-solid fa-circle-check"></i> Approved Leaves</small>
+<h4>{{ leave_data.0|default:0 }}</h4>
+</div>
+</div>
+
+<div class="col-md-3 mb-3">
+<div class="stat-card bg-danger">
+<small><i class="fa-solid fa-circle-xmark"></i> Rejected Leaves</small>
+<h4>{{ leave_data.1|default:0 }}</h4>
+</div>
+</div>
+
+<div class="col-md-3 mb-3">
+<div class="stat-card bg-warning">
+<small><i class="fa-solid fa-hourglass-half"></i> Pending Leaves</small>
+<h4>{{ leave_data.2|default:0 }}</h4>
+</div>
+</div>
+
+<div class="col-md-3 mb-3">
+<div class="stat-card bg-secondary">
+<small><i class="fa-solid fa-ban"></i> Cancelled Leaves</small>
+<h4>{{ leave_data.3|default:0 }}</h4>
+</div>
+</div>
+
+</div>
+
+<a href="{% url 'leave_calendar' %}" class="calendar-btn">
+    <i class="fa-solid fa-calendar-days"></i> View Leave Calendar
+</a>
+
+<!-- ===================== -->
+<!-- CHARTS -->
+<!-- ===================== -->
+<div class="row">
+
+<div class="col-md-6 mb-4">
+<div class="card p-3 shadow-sm">
+<h5>Monthly Revenue</h5>
+<canvas id="revenueChart"></canvas>
+</div>
+</div>
+
+<div class="col-md-6 mb-4">
+<div class="card p-3 shadow-sm">
+<h5>Students per Class</h5>
+<canvas id="studentsPerClass"></canvas>
+</div>
+</div>
+
+<div class="col-md-6 mb-4">
+<div class="card p-3 shadow-sm">
+<h5>Teachers per Subject</h5>
+<canvas id="teachersPerSubject"></canvas>
+</div>
+</div>
+
+<div class="col-md-6 mb-4">
+<div class="card p-3 shadow-sm">
+<h5>Leave Analytics</h5>
+<canvas id="leaveChart"></canvas>
+</div>
+</div>
+
+</div>
+
+</div>
+
+<!-- ===================== -->
+<!-- CHART SCRIPT (SAFE) -->
+<!-- ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+const monthlyLabels = {{ monthly_labels|default:"[]"|safe }};
+const monthlyData   = {{ monthly_data|default:"[]"|safe }};
+const classLabels   = {{ class_labels|default:"[]"|safe }};
+const classData     = {{ class_data|default:"[]"|safe }};
+const subjectLabels = {{ subject_labels|default:"[]"|safe }};
+const subjectData   = {{ subject_data|default:"[]"|safe }};
+const leaveLabels   = {{ leave_labels|default:"[]"|safe }};
+const leaveData     = {{ leave_data|default:"[]"|safe }};
+
+// Revenue
+new Chart(document.getElementById('revenueChart'),{
+type:'line',
+data:{
+labels:monthlyLabels,
+datasets:[{
+label:'Revenue',
+data:monthlyData,
+borderColor:'#198754',
+fill:true
+}]
+}
+});
+
+// Students
+new Chart(document.getElementById('studentsPerClass'),{
+type:'bar',
+data:{
+labels:classLabels,
+datasets:[{
+label:'Students',
+data:classData,
+backgroundColor:'#0d6efd'
+}]
+}
+});
+
+// Teachers
+new Chart(document.getElementById('teachersPerSubject'),{
+type:'pie',
+data:{
+labels:subjectLabels,
+datasets:[{
+data:subjectData,
+backgroundColor:['#198754','#ffc107','#dc3545','#6f42c1']
+}]
+}
+});
+
+// Leave
+new Chart(document.getElementById('leaveChart'),{
+type:'pie',
+data:{
+labels:leaveLabels,
+datasets:[{
+data:leaveData,
+backgroundColor:['#198754','#dc3545','#ffc107','#6c757d']
+}]
+}
+});
+
+});
+
+// CLOCK
+function updateClock(){
+
+const now = new Date();
+
+// TIME
+const time = now.toLocaleTimeString([],{
+hour:'2-digit',
+minute:'2-digit',
+second:'2-digit'
+});
+
+// DATE (FIXED FORMAT)
+const date = now.toLocaleDateString('en-GB',{
+weekday:'long',
+year:'numeric',
+month:'long',
+day:'numeric'
+});
+
+document.getElementById("adminClock").innerText = time;
+document.getElementById("adminDate").innerText = date;
+}
+
+updateClock();
+setInterval(updateClock,1000);
+
+</script>
+
+{% endblock %}

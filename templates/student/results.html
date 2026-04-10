@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block sidebar %}
+{% include "includes/student_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<style>
+:root {
+    --primary: #1e3c72;
+    --secondary: #2a5298;
+    --success: #28a745;
+    --bg: #f4f6f9;
+}
+
+body {
+    background: var(--bg);
+}
+
+/* HEADER */
+.page-title {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* CARD */
+.result-card {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.result-card:hover {
+    transform: translateY(-5px);
+}
+
+/* CARD HEADER */
+.result-header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* STATS */
+.stat-box {
+    background: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.05);
+    transition: 0.3s;
+}
+
+.stat-box:hover {
+    transform: scale(1.03);
+}
+
+.stat-box h6 {
+    font-size: 13px;
+    color: #777;
+}
+
+.stat-box h4 {
+    font-weight: 700;
+    margin: 5px 0 0;
+}
+
+/* COLORS */
+.marks { color: #007bff; }
+.percent { color: #17a2b8; }
+.grade { color: #28a745; }
+
+/* BUTTON */
+.btn-download {
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-weight: 500;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(40,167,69,0.3);
+}
+
+/* EMPTY STATE */
+.empty-box {
+    text-align: center;
+    padding: 40px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.empty-box i {
+    font-size: 40px;
+    color: #ccc;
+}
+</style>
+
+<div class="container mt-5">
+
+<h3 class="page-title mb-4">
+    <i class="fa-solid fa-chart-line"></i> Academic Results
+</h3>
+
+{% for result in results %}
+
+<div class="card result-card mb-4">
+
+<div class="result-header">
+    <i class="fa-solid fa-calendar-check"></i> {{ result.get_term_display }}
+</div>
+
+<div class="card-body">
+
+<div class="row text-center g-3 mb-3">
+
+<div class="col-md-4">
+<div class="stat-box">
+<h6>Total Marks</h6>
+<h4 class="marks">{{ result.total_marks }}</h4>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="stat-box">
+<h6>Percentage</h6>
+<h4 class="percent">{{ result.percentage }}%</h4>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="stat-box">
+<h6>Grade</h6>
+<h4 class="grade">{{ result.grade }}</h4>
+</div>
+</div>
+
+</div>
+
+<div class="d-flex justify-content-end">
+<a href="{% url 'download_result_pdf' result.id %}" 
+   class="btn btn-download">
+<i class="fa-solid fa-file-arrow-down"></i> Download Result
+</a>
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<div class="empty-box">
+    <i class="fa-solid fa-face-frown mb-3"></i>
+    <h5>No Results Yet</h5>
+    <p class="text-muted">Your academic results will appear here once published.</p>
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

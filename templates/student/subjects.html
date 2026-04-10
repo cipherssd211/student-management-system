@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block sidebar %}
+{% include "includes/student_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold mb-4"><i class="fa-solid fa-graduation-cap"></i> Subjects</h3>
+
+<div class="card">
+<ul class="list-group list-group-flush">
+
+{% for subject in subjects %}
+<li class="list-group-item">{{ subject.name }}</li>
+{% empty %}
+<li class="list-group-item text-muted">No subjects assigned</li>
+{% endfor %}
+
+</ul>
+</div>
+
+{% endblock %}
